@@ -3,7 +3,9 @@ package com.myname.todo_app.controllers;
 
 import com.myname.todo_app.model.Task;
 import com.myname.todo_app.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,17 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
+
+    @GetMapping
+    public ResponseEntity<Page<Task>> getTasks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection) {
+
+        Page<Task> tasks = taskService.getTasks(page, size, sortBy, sortDirection);
+        return ResponseEntity.ok(tasks);
+    }
 
     @GetMapping
     public List<Task> getAllTasks() {
@@ -29,7 +42,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public Task createTask(@RequestBody Task task) {
+    public Task createTask(@Valid @RequestBody Task task) {
         return taskService.createTask(task);
     }
 
