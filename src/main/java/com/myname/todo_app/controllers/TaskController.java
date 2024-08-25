@@ -1,12 +1,14 @@
 package com.myname.todo_app.controllers;
 
 
+import com.myname.todo_app.exception.TaskNotFoundException;
 import com.myname.todo_app.model.Task;
 import com.myname.todo_app.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,10 +32,14 @@ public class TaskController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
-        return taskService.getTaskById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        try {
+            Task task = taskService.getTaskById(id);
+            return ResponseEntity.ok(task);
+        } catch (TaskNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
+
 
     @PostMapping
     public Task createTask(@Valid @RequestBody Task task) {
@@ -65,7 +71,7 @@ public class TaskController {
     }
     @GetMapping("/welcome")
     public String welcome(@RequestParam(value = "lang", required = false) String lang) {
-        Locale locale = new Locale(lang != null ? lang : "en");
+        Locale locale = Locale.forLanguageTag((lang != null ? lang : "en"));
         return messageSource.getMessage("welcome.message", null, locale);
     }
 }

@@ -1,11 +1,13 @@
 package com.myname.todo_app.service;
 
+import com.myname.todo_app.exception.TaskNotFoundException;
 import com.myname.todo_app.model.Task;
 import com.myname.todo_app.repository.TaskRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Data
@@ -22,6 +23,7 @@ public class TaskService {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
 
+    @Autowired
     private final TaskRepository taskRepository;
 
     public List<Task> getAllTasks() {
@@ -29,9 +31,9 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    public Optional<Task> getTaskById(Long id) {
+    public Task getTaskById(Long id) {
         logger.info("Fetching task by id: {}", id);
-        return taskRepository.findById(id);
+        return taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
     }
 
     public Task createTask(Task task) {
