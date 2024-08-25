@@ -3,11 +3,15 @@ package com.myname.todo_app.controllers;
 
 import com.myname.todo_app.model.Task;
 import com.myname.todo_app.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -15,6 +19,9 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @GetMapping
     public List<Task> getAllTasks() {
@@ -29,7 +36,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public Task createTask(@RequestBody Task task) {
+    public Task createTask(@Valid @RequestBody Task task) {
         return taskService.createTask(task);
     }
 
@@ -44,5 +51,21 @@ public class TaskController {
 
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<Task>> getTasks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection) {
+
+        Page<Task> tasks = taskService.getTasks(page, size, sortBy, sortDirection);
+        return ResponseEntity.ok(tasks);
+    }
+    @GetMapping("/welcome")
+    public String welcome(@RequestParam(value = "lang", required = false) String lang) {
+        Locale locale = new Locale(lang != null ? lang : "en");
+        return messageSource.getMessage("welcome.message", null, locale);
     }
 }
