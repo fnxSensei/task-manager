@@ -23,6 +23,7 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
+    private final UserRepository userRepository;
 
     @Autowired
     private MessageSource messageSource;
