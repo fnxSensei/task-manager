@@ -22,15 +22,16 @@ public class JwtAuthenticationController {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping("/authenticate")
     public String createAuthenticationToken(@RequestBody User authenticationRequest) throws Exception {
-
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
         );
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-
         return jwtTokenUtil.generateToken(userDetails);
     }
 
@@ -40,3 +41,4 @@ public class JwtAuthenticationController {
         return "User registered successfully!";
     }
 }
+

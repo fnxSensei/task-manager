@@ -23,17 +23,14 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
-    private final UserRepository userRepository;
 
     @Autowired
     private MessageSource messageSource;
-
 
     @GetMapping
     public List<Task> getAllTasks() {
         return taskService.getAllTasks();
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
@@ -45,12 +42,10 @@ public class TaskController {
         }
     }
 
-
     @PostMapping
     public Task createTask(@Valid @RequestBody Task task) {
         return taskService.createTask(task);
     }
-
 
     @PutMapping("/{id}")
     public ResponseEntity<Task> updateTask(@PathVariable long id, @Valid @RequestBody Task taskDetails) {
@@ -58,10 +53,8 @@ public class TaskController {
         return ResponseEntity.ok(updatedTask);
     }
 
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }
@@ -72,13 +65,14 @@ public class TaskController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDirection) {
-
         Page<Task> tasks = taskService.getTasks(page, size, sortBy, sortDirection);
         return ResponseEntity.ok(tasks);
     }
+
     @GetMapping("/welcome")
     public String welcome(@RequestParam(value = "lang", required = false) String lang) {
         Locale locale = Locale.forLanguageTag((lang != null ? lang : "en"));
         return messageSource.getMessage("welcome.message", null, locale);
     }
 }
+

@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import static org.springframework.security.core.userdetails.User.withUsername;
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
